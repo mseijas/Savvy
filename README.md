@@ -1,6 +1,6 @@
-# Project X
+# Project Savvy
 
-TODO describe project here
+Savvy is a tool for assessing educational games’ learning impact
 
 A live demo can be found [here](TODO point to project gh page).
 
