@@ -70,7 +70,7 @@ var tooltip = d3.select("body").append("div")
     .style("opacity", 0);
 
 // load data
-d3.csv("studentData.csv", function(error, data) {6
+d3.csv("studentData_clean.csv", function(error, data) {6
   // change string (from CSV) into number format
   data.forEach(function(d) {
     d.IIGC_SUM = +d.IIGC_SUM;
