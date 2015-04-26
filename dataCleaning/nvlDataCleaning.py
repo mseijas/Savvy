@@ -2,9 +2,9 @@
 ###############################################
 ###############################################
 EXAMPLE OF HOW TO RUN THIS CODE
-python nvlDataCleaning.py nvlDataSource.csv
+python nvlDataCleaning.py nvlDataSource.csv output.csv
 so... that means...
-python + script + dataFile
+python + script + dataFile + output file
 ###############################################
 ###############################################
 
@@ -102,8 +102,25 @@ if __name__ == '__main__':
     if tokens[8] == '4002':
       nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['steps']+=1
 
-for i in nvlDataClean:
-	print ''
-	print str(i) + str(nvlDataClean[i])
+#for i in nvlDataClean:
+#	print ''
+#	print str(i) + str(nvlDataClean[i])
 
-print len(nvlDataClean)
+#print len(nvlDataClean)
+
+#Write results to file
+  results = open(sys.argv[2], 'w')
+  
+  results.write("subjectId,chapter,level,playTime,deaths,badgesEarned,anglesUnlocked,playCount")
+  results.write("\n")
+
+  for subjectId in nvlDataClean:
+    for chapter in nvlDataClean[subjectId]:
+      for level in nvlDataClean[subjectId][chapter]:
+        #print str(subjectId)+','+str(chapter)+','+str(level)+','+'error'+','+str(nvlDataClean[subjectId][chapter][level]['deaths'])+','+str(nvlDataClean[subjectId][chapter][level]['badgesEarned'])+','+str(nvlDataClean[subjectId][chapter][level]['anglesUnlocked'])+','+str(nvlDataClean[subjectId][chapter][level]['playCount'])
+        results.write(str(subjectId)+','+str(chapter)+','+str(level)+','+'error'+','+str(nvlDataClean[subjectId][chapter][level]['deaths'])+','+str(nvlDataClean[subjectId][chapter][level]['badgesEarned'])+','+str(nvlDataClean[subjectId][chapter][level]['anglesUnlocked'])+','+str(nvlDataClean[subjectId][chapter][level]['playCount']))
+        results.write("\n")
+
+  results.close()
+
+  print "all done!"
