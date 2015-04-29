@@ -7,12 +7,9 @@ so... that means...
 python + script + dataFile + output file
 ###############################################
 ###############################################
-
-###############################################
-###############################################
 DATA DICTIONARY (explaining columns from Melissa's CSV)
 
-tokens[0] = subjectID
+tokens[0] = subjectId
 tokens[1] = subjectCond
 tokens[2] = testDate
 tokens[3] = writer
@@ -27,7 +24,8 @@ tokens[11] = d02
 tokens[12] = d03
 tokens[13] = d04
 tokens[14] = dataDescription
-
+###############################################
+###############################################
 '''
 
 import sys
@@ -44,9 +42,10 @@ if __name__ == '__main__':
     
     #add subjectId to dictionary
     if tokens[0] not in nvlDataClean:
-    	#print tokens[0]
-    	nvlDataClean[tokens[0]]={}
-    
+      #print tokens[0]
+      nvlDataClean[tokens[0]]={}
+      #nvlDataClean[tokens[0]]['subjectCond']=tokens[1]
+      
     #add chapter to dictionary[subjectId]
     if tokens[4] != '':
       if tokens[4] not in nvlDataClean[tokens[0]]:
@@ -68,6 +67,8 @@ if __name__ == '__main__':
         nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['playCount']=1
         #set steps per level at 0
         nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['steps']=0
+        #set subjectCond
+        nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['badgeCond']=tokens[1]
 
     #insert playTime for each level for each chapter into dictionary
     if tokens[8] == '5002':
@@ -99,8 +100,17 @@ if __name__ == '__main__':
       if tokens[6] > nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['playCount']:
         nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['playCount']=tokens[6]
 
+    #count number of times the player moved the noob, add +1 for each time to get a total 'steps taken to complete level' measure.
     if tokens[8] == '4002':
       nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['steps']+=1
+
+    #store badge decision status. OPT-IN, OPT-OUT
+    if tokens[8] == '4008':
+      #print tokens[10]
+      nvlDataClean[tokens[0]][tokens[4]][tokens[5]]['badgeDecision']=tokens[10]
+
+
+
 
 #for i in nvlDataClean:
 #	print ''
@@ -108,19 +118,54 @@ if __name__ == '__main__':
 
 #print len(nvlDataClean)
 
-#Write results to file
-  results = open(sys.argv[2], 'w')
-  
-  #results.write("subjectId,chapter,level,playTime,deaths,badgesEarned,anglesUnlocked,playCount")
-  #results.write("\n")
-
+#in this section i'll fill in all the null attributes that weren't obtained from the dataset in order to have a consistent amount of information for each row.
   for subjectId in nvlDataClean:
     for chapter in nvlDataClean[subjectId]:
       for level in nvlDataClean[subjectId][chapter]:
-        print str(subjectId)+','+str(chapter)+','+str(level)+','+str(nvlDataClean[subjectId][chapter][level]['playTime'])+','+str(nvlDataClean[subjectId][chapter][level]['deaths'])+','+str(nvlDataClean[subjectId][chapter][level]['badgesEarned'])+','+str(nvlDataClean[subjectId][chapter][level]['anglesUnlocked'])+','+str(nvlDataClean[subjectId][chapter][level]['playCount'])
-        #results.write(str(subjectId)+','+str(chapter)+','+str(level)+','+'error'+','+str(nvlDataClean[subjectId][chapter][level]['deaths'])+','+str(nvlDataClean[subjectId][chapter][level]['badgesEarned'])+','+str(nvlDataClean[subjectId][chapter][level]['anglesUnlocked'])+','+str(nvlDataClean[subjectId][chapter][level]['playCount']))
-        #results.write("\n")
+        #print subjectId, chapter, level
+        if 'playTime' not in nvlDataClean[subjectId][chapter][level]:
+          nvlDataClean[subjectId][chapter][level]['playTime']='NULL'
+        if 'badgeDecision' not in nvlDataClean[subjectId][chapter][level]:
+          nvlDataClean[subjectId][chapter][level]['badgeDecision']='NULL'
 
+#Write results to file
+  results = open(sys.argv[2], 'w')
+  
+  results.write("subjectId,subjectCond,chapter,level,playTime,deaths,badgesEarned,anglesUnlocked,playCount,steps,badgeDecision")
+  results.write("\n")
+
+  '''
+  ###############################################
+  ###############################################
+  DATA DICTIONARY (explaining columns from our CSV)
+
+  tokens[0] = subjectId/ student
+  tokens[1] = subject condition (level badges, no badges)
+  tokens[2] = chapter played
+  tokens[3] = level played
+  tokens[4] = playTime for that level
+  tokens[5] = deaths for that level
+  tokens[6] = badgesEarned for that level
+  tokens[7] = anglesUnlocked for that level
+  tokens[8] = playCount. times that level was played
+  tokens[9] = steps taken to complete level
+  tokens[10] = badgeDecision: OPT-IN, OPT-OUT
+  ###############################################
+  ###############################################
+  '''
+
+  #count for debugging
+  count = 0
+  
+  for subjectId in nvlDataClean:
+    for chapter in nvlDataClean[subjectId]:
+      for level in nvlDataClean[subjectId][chapter]:
+        #try:
+        results.write(str(subjectId)+','+str(nvlDataClean[subjectId][chapter][level]['badgeCond'])+','+str(chapter)+','+str(level)+','+str(nvlDataClean[subjectId][chapter][level]['playTime'])+','+str(nvlDataClean[subjectId][chapter][level]['deaths'])+','+str(nvlDataClean[subjectId][chapter][level]['badgesEarned'])+','+str(nvlDataClean[subjectId][chapter][level]['anglesUnlocked'])+','+str(nvlDataClean[subjectId][chapter][level]['playCount'])+','+str(nvlDataClean[subjectId][chapter][level]['steps'])+','+str(nvlDataClean[subjectId][chapter][level]['badgeDecision']))
+        results.write("\n")
+        
   results.close()
 
-  print "all done!"
+  #print count
+  
+print "all done!"
