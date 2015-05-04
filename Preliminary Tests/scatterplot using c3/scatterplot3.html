@@ -39,7 +39,7 @@
 	<script src="C3/c3.min.js"></script>
 </head>
 
-<body>
+<body onmouseup="updateSelected()">
 	<!-- Drop down selection for the axes -->
 	<select id="Y-Axis" onchange="AxisChange()" class="indent">
 	  <option disabled>Y-Axis</option>
@@ -65,7 +65,7 @@
 	function AxisChange() {
 			
 		if (document.getElementById("Y-Axis").value == "Pre Geo Sum" && document.getElementById("X-Axis").value == "Pre Geo Sum"){
-			chart.unload();
+			chart.unload('alligned_pregeosum','no_pregeosum','random_pregeosum');
 			chart.load({url: 'studentDataPreGeoPreGeo.csv'});			
 		}    
 		if (document.getElementById("Y-Axis").value == "Pre Geo Sum" && document.getElementById("X-Axis").value == "Post Geo Sum"){
@@ -74,7 +74,8 @@
 				AlignedBadges: 'alligned_pregeosum',
 				NoBadges: 'no_pregeosum',
 				RandomBadges: 'random_pregeosum',
-			},url: 'studentDataPreGeoPostGeo.csv'});			
+			},url: 'studentDataPreGeoPostGeo.csv'});		
+			chart.axis.x.label = 'Post Geo Sum';
 		}  		
 		else{
 			chart.unload();	
@@ -83,8 +84,11 @@
 	</script>
 	
 	<!-- The Chart -->
-	<div id="chart" onmouseup="updateSelected()"></div>
-	<div id="selectedPts"></div>
+	<div id="chart"></div>
+	<div>
+		<p id="selectedPts">stuff</p>
+		<p id="firstSelectedPts">stuff</p>
+	</div>
 	<!-- Script that makes the chart -->
 	<script>
 		var chart = c3.generate({
@@ -104,7 +108,7 @@
 		},
 		axis: {
 			x: {
-				label: 'Post Geo Sum',
+				label: 'Pre Geo Sum',
 				tick: {
 					fit: false
 				}
@@ -121,8 +125,11 @@
 	<!-- Script that makes the chart -->
 	<script>
 		function updateSelected() {
-			var selected = chart.selected();
-			ReplaceContentInContainer('selectedPts', '&lt;img src=\'2.jpg\'&gt;')
+			var selected = chart.selected();			
+			var firstSelectedY = selected[0].value;
+			var firstSelectedX = selected[0].x;
+			document.getElementById("selectedPts").innerHTML = selected;
+			document.getElementById("firstSelectedPts").innerHTML = firstSelectedX + ", " + firstSelectedY;
 		}
 	</script>
 </body>
